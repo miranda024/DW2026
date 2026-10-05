@@ -35,7 +35,7 @@
           @change="atualizar({ partido: $event.target.value })"
         >
           <option value="">Todos</option>
-          <option v-for="item in partidos" :key="item.id" :value="item.sigla">{{ item.sigla }}</option>
+          <option v-for="sigla in partidos" :key="sigla" :value="sigla">{{ sigla }}</option>
         </select>
       </div>
 

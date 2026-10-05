@@ -16,6 +16,8 @@ Aplicação web para consulta de deputados federais, desenvolvida com **Vue 3** 
 
 ### Funcionalidades extras
 - **Filtros por estado e partido**, que podem ser combinados com a busca por nome
+- **Busca instantânea**: a lista completa é carregada uma vez e os filtros são aplicados no navegador (a busca ignora acentos e maiúsculas)
+- **Nova tentativa automática** quando a API da Câmara demora ou responde com erro (ela às vezes retorna 504)
 - **Favoritos**: marque deputados com a estrela; eles ficam salvos no navegador (`localStorage`) e podem ser filtrados
 - **Filtros na URL**: a busca é mantida ao voltar da página de detalhes e pode ser compartilhada por link (ex.: `/?uf=MG&partido=PT`)
 - **Gráfico de deputados por partido** referente ao resultado atual da busca

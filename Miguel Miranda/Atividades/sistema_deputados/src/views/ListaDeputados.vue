@@ -71,10 +71,15 @@ import CardDeputado from '../components/CardDeputado.vue'
 import CarregandoSpinner from '../components/CarregandoSpinner.vue'
 import FiltroDeputados from '../components/FiltroDeputados.vue'
 import ResumoPartidos from '../components/ResumoPartidos.vue'
-import { buscarDeputados, buscarPartidos } from '../services/camaraApi'
+import { buscarTodosDeputados } from '../services/camaraApi'
 import { alternarFavorito, lerFavoritos } from '../utils/favoritos'
 
 const POR_PAGINA = 24
+
+// Deixa o texto em minúsculas e sem acentos, para "jose" encontrar "José"
+function normalizar(texto) {
+  return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+}
 
 export default {
   name: 'ListaDeputados',
@@ -88,12 +93,10 @@ export default {
     return {
       POR_PAGINA,
       deputados: [],
-      partidos: [],
       favoritos: lerFavoritos(),
       carregando: true,
       erro: '',
-      quantidadeVisivel: POR_PAGINA,
-      requisicaoAtual: 0
+      quantidadeVisivel: POR_PAGINA
     }
   },
   computed: {
@@ -107,54 +110,46 @@ export default {
         favoritos: query.favoritos === '1'
       }
     },
-    chaveBusca() {
-      return `${this.filtros.nome}|${this.filtros.uf}|${this.filtros.partido}`
+    // Partidos que têm deputados em exercício, em ordem alfabética
+    partidos() {
+      const siglas = new Set(this.deputados.map((deputado) => deputado.siglaPartido))
+      return [...siglas].sort()
     },
     deputadosFiltrados() {
-      if (!this.filtros.favoritos) return this.deputados
-      return this.deputados.filter((deputado) => this.favoritos.includes(deputado.id))
+      const { nome, uf, partido, favoritos } = this.filtros
+      const busca = normalizar(nome)
+      return this.deputados.filter((deputado) =>
+        (!busca || normalizar(deputado.nome).includes(busca)) &&
+        (!uf || deputado.siglaUf === uf) &&
+        (!partido || deputado.siglaPartido === partido) &&
+        (!favoritos || this.favoritos.includes(deputado.id))
+      )
     },
     deputadosVisiveis() {
       return this.deputadosFiltrados.slice(0, this.quantidadeVisivel)
     }
   },
   watch: {
-    chaveBusca() {
-      this.carregarDeputados()
-    },
-    'filtros.favoritos'() {
+    // Ao mudar qualquer filtro, volta a mostrar só a primeira "página" de cards
+    filtros() {
       this.quantidadeVisivel = POR_PAGINA
     }
   },
   mounted() {
     document.title = 'Deputados Federais'
     this.carregarDeputados()
-    this.carregarPartidos()
   },
   methods: {
     async carregarDeputados() {
-      // Evita que uma resposta antiga sobrescreva uma busca mais recente
-      const requisicao = ++this.requisicaoAtual
       this.carregando = true
       this.erro = ''
       try {
-        const dados = await buscarDeputados(this.filtros)
-        if (requisicao !== this.requisicaoAtual) return
-        this.deputados = dados
-        this.quantidadeVisivel = POR_PAGINA
+        this.deputados = await buscarTodosDeputados()
       } catch (error) {
-        if (requisicao !== this.requisicaoAtual) return
         console.error('Erro na API de deputados: ', error)
-        this.erro = 'Não foi possível carregar os deputados. Verifique sua conexão.'
+        this.erro = 'A API da Câmara não respondeu. Tente novamente em alguns segundos.'
       } finally {
-        if (requisicao === this.requisicaoAtual) this.carregando = false
-      }
-    },
-    async carregarPartidos() {
-      try {
-        this.partidos = await buscarPartidos()
-      } catch (error) {
-        console.error('Erro na API de partidos: ', error)
+        this.carregando = false
       }
     },
     mudarFiltro(mudanca) {
