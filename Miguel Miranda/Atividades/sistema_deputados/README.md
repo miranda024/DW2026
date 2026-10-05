@@ -4,7 +4,7 @@ Aplicação web para consulta de deputados federais, desenvolvida com **Vue 3** 
 
 **Aluno:** Miguel Miranda · Desenvolvimento Web 2026
 
-🔗 **Versão em produção:** _adicionar a URL após o deploy_
+🔗 **Versão em produção:** https://dw2026-sistema-deputados.vercel.app
 
 ## Funcionalidades
 
