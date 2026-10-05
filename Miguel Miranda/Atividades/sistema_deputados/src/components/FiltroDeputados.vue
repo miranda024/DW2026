@@ -85,7 +85,7 @@ export default {
     }
   },
   methods: {
-    // Espera o usuário parar de digitar para não chamar a API a cada letra
+    // Espera o usuário parar de digitar para não atualizar a URL a cada letra
     digitarNome() {
       clearTimeout(this.temporizador)
       this.temporizador = setTimeout(() => this.atualizar({ nome: this.textoBusca.trim() }), 400)
