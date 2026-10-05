@@ -1,0 +1,39 @@
+:root {
+  --cor-primaria: #0b3d2e;
+  --cor-destaque: #f2b705;
+}
+
+body {
+  background: #f5f7fa;
+  color: #222;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#app {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.topo {
+  background: var(--cor-primaria);
+}
+
+.btn-primaria {
+  background: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+  color: #fff;
+}
+
+.btn-primaria:hover,
+.btn-primaria:focus {
+  background: #145c45;
+  border-color: #145c45;
+  color: #fff;
+}
+
+.texto-primario {
+  color: var(--cor-primaria);
+}
